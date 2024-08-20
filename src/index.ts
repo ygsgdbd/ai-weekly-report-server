@@ -1,13 +1,8 @@
 import {Hono} from 'hono'
 import {cors} from "hono/cors";
-import {compress} from "hono/compress";
 import {ChatOpenAI} from "@langchain/openai";
 
 const app = new Hono()
-
-app.get("/", (c) => {
-    return c.text(`${new Date()}`)
-})
 
 app.use(cors({
     origin: "*",
@@ -15,24 +10,31 @@ app.use(cors({
     allowMethods: ["*"]
 }))
 
-app.post("/api/openai-summary", async (c) => {
+
+app.post("/api/v1/openai-weekly", async (c) => {
     const body = await c.req.json<{
         startAt: number,
         endAt: number,
-        systemMessage: string,
+        systemMessage?: string,
+        userMessage?: string
         logText: string,
         openAI: {
             apiKey: string,
-            maxTokens: number,
-            temperature: number,
+            temperature?: number,
             model?: string
         },
     }>()
+
     const ai = new ChatOpenAI({
         ...body.openAI,
         model: body.openAI.model ?? "gpt-4o-mini"
     })
-    const chunks = await ai.batch([])
+
+    const chunks = await ai.batch([
+        body.systemMessage ?? "",
+        body.userMessage ?? ""
+    ])
+
     return c.json({
         data: chunks.map(k => k.content).join("")
     })
