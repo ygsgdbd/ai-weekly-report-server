@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  install:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -35,12 +35,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-  deploy:
-    needs: [install]
-    runs-on: ubuntu-latest
-    name: Deploy
-    steps:
-      - uses: actions/checkout@v4
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
