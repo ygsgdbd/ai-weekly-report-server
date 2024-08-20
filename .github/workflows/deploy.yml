@@ -19,7 +19,6 @@ concurrency:
 jobs:
   install:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,6 +36,7 @@ jobs:
         run: pnpm install
 
   deploy:
+    needs: [install]
     runs-on: ubuntu-latest
     name: Deploy
     steps:
