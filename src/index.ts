@@ -10,6 +10,10 @@ app.use(cors({
     allowMethods: ["*"]
 }))
 
+app.get("/", (c) => {
+    return c.text(`${new Date()}`)
+})
+
 app.post("/api/v1/openai/batch", async (c) => {
     const body = await c.req.json<{
         inputs: string[],
