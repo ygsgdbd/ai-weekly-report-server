@@ -5,36 +5,25 @@ import {ChatOpenAI} from "@langchain/openai";
 const app = new Hono()
 
 app.use(cors({
-    origin: "*",
+    origin: ["*"],
     allowHeaders: ["*"],
     allowMethods: ["*"]
 }))
 
-
-app.post("/api/v1/openai-weekly", async (c) => {
+app.post("/api/v1/openai/batch", async (c) => {
     const body = await c.req.json<{
-        startAt: number,
-        endAt: number,
-        systemMessage?: string,
-        userMessage?: string
-        logText: string,
+        inputs: string[],
         openAI: {
             apiKey: string,
             temperature?: number,
             model?: string
         },
     }>()
-
     const ai = new ChatOpenAI({
         ...body.openAI,
         model: body.openAI.model ?? "gpt-4o-mini"
     })
-
-    const chunks = await ai.batch([
-        body.systemMessage ?? "",
-        body.userMessage ?? ""
-    ])
-
+    const chunks = await ai.batch(body.inputs)
     return c.json({
         data: chunks.map(k => k.content).join("")
     })
