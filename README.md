@@ -1,1 +1,8 @@
-# ai-weekly-report-server
+```
+npm install
+npm run dev
+```
+
+```
+npm run deploy
+```
